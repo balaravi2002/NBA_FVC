@@ -1,8 +1,53 @@
-from shiny import reactive, render, ui
-from shiny.express import input, ui
+from shiny import App, render, ui
+import pandas as pd
+import plotly.express as px
+import sys
 
-ui.input_slider("val", "Slider Label", min = 0, max = 100, value = 50)
+print(sys.version)
 
-@render.text
-def slider_val():
-    return f"Slider value: {input.val()}"
+# Load your data (uncomment and modify this line to load your actual data)
+df = pd.read_csv('NBA_FVC - NBA_FVC_2.0.csv')
+
+# Define your UI
+def ui():
+    return ui.page_fluid(
+        ui.h1("Simple Player Chart"),
+        ui.layout_sidebar(
+            ui.panel_sidebar(
+                ui.input_select("Player", "Select Player", ["Player 1", "Player 2", "Player 3"]),  # Replace with actual player names
+                ui.input_slider("Guard", "Select Guard", 2010, 2023, value=2023)
+            ),
+            ui.panel_main(
+                ui.h2("Player"),
+                ui.output_plot("player_plot"),
+                ui.h2("Player Stats"),
+                ui.output_table("player_stats")
+            )
+        )
+    )
+
+# Define your server logic
+def server(input, output, session):
+    @output
+    @render.plot
+    def ft_plot():
+        # Replace this with your actual data and plot creation
+        # This is just a placeholder plot
+        fig = px.line(x=[2010, 2011, 2012, 2013], y=[75, 80, 78, 82], 
+                      title=f"{input.player()}'s Free Throw % in {input.season()}")
+        return fig
+
+    @output
+    @render.table
+    def player_stats():
+        # Replace this with actual player stats
+        return pd.DataFrame({
+            "Stat": ["FT Attempts", "FT Made", "FT%"],
+            "Value": [100, 80, "80%"]
+        })
+
+# Create and run the app
+app = App(ui, server)
+
+if __name__ == "__main__":
+    app.run()
