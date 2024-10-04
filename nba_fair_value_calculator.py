@@ -891,12 +891,14 @@ name_corrections = {
     'Louis Amundson': 'Lou Amundson',
     'B.J. Johnson': 'BJ Johnson',
     'P.J. Dozier': 'PJ Dozier',
+    'K.J. McDaniels': 'KJ McDaniels',
     'DJ Wilson': 'D.J. Wilson',
     "Jae’Sean Tate": "Jae'Sean Tate",
     'Mohamed Bamba': 'Mo Bamba',
     'Kevin Knox': 'Kevin Knox II',
     'G.G. Jackson': 'GG Jackson II',
-    'Harry Giles': 'Harry Giles III'
+    'Harry Giles': 'Harry Giles III',
+    'Nene Hilario': 'Nene'
 }
 
 # Apply corrections to 'Player' column in NBA_FVC
@@ -1666,7 +1668,7 @@ df = pd.read_csv(io.StringIO(uploaded[actual_filename].decode('utf-8')))
 df = df.iloc[0:]
 
 # Filter the data based on the new conditions
-filtered_data = []
+initial_filter_data = []
 omitted_data = []
 
 for index, row in df.iterrows():
@@ -1679,57 +1681,90 @@ for index, row in df.iterrows():
     if omit_condition_1 or omit_condition_2:
         omitted_data.append(row)
     else:
-        filtered_data.append(row)
+        initial_filter_data.append(row)
 
 # Create DataFrames for filtered and omitted data
-NBA_FVC_filtered = pd.DataFrame(filtered_data)
+NBA_FVC_initial_filter = pd.DataFrame(initial_filter_data)
 NBA_FVC_omitted = pd.DataFrame(omitted_data)
 
 # # Save the filtered DataFrame to a new CSV file
-# NBA_FVC_filtered.to_csv('filtered_data.csv', index=False)
+# NBA_FVC_initial_filter.to_csv('initial_filter_data.csv', index=False)
 
 # # Save the omitted DataFrame to a separate CSV file
 # NBA_FVC_omitted.to_csv('omitted_data.csv', index=False)
 
 # Display the first few rows of the filtered DataFrame
-NBA_FVC_filtered.head()
+NBA_FVC_initial_filter.head()
 
 """### Data Pre-Processing"""
 
 # Convert dollar columns to decimals
-NBA_FVC_filtered['Avg Salary Cap'] = NBA_FVC_filtered['Avg Salary Cap'].replace({'\$': '', ',': '', '%': ''}, regex=True).astype(float)
-NBA_FVC_filtered['Avg Luxury Tax'] = pd.to_numeric(NBA_FVC_filtered['Avg Luxury Tax'].replace('[\$,]', '', regex=True), errors='coerce')
-NBA_FVC_filtered['Avg 1st Apron'] = pd.to_numeric(NBA_FVC_filtered['Avg 1st Apron'].replace('[\$,]', '', regex=True), errors='coerce')
-NBA_FVC_filtered['Avg 2nd Apron'] = pd.to_numeric(NBA_FVC_filtered['Avg 2nd Apron'].replace('[\$,]', '', regex=True), errors='coerce')
-NBA_FVC_filtered['AAV'] = NBA_FVC_filtered['AAV'].replace({'\$': '', ',': ''}, regex=True).astype(float)
-NBA_FVC_filtered['Value'] = NBA_FVC_filtered['Value'].replace({'\$': '', ',': ''}, regex=True).astype(float)
+NBA_FVC_initial_filter['Avg_Salary_Cap'] = NBA_FVC_initial_filter['Avg_Salary_Cap'].replace({'\$': '', ',': '', '%': ''}, regex=True).astype(float)
+NBA_FVC_initial_filter['Avg_Luxury_Tax'] = pd.to_numeric(NBA_FVC_initial_filter['Avg_Luxury_Tax'].replace('[\$,]', '', regex=True), errors='coerce')
+NBA_FVC_initial_filter['Avg_1st_Apron'] = pd.to_numeric(NBA_FVC_initial_filter['Avg_1st_Apron'].replace('[\$,]', '', regex=True), errors='coerce')
+NBA_FVC_initial_filter['Avg_2nd_Apron'] = pd.to_numeric(NBA_FVC_initial_filter['Avg_2nd_Apron'].replace('[\$,]', '', regex=True), errors='coerce')
+NBA_FVC_initial_filter['AAV'] = NBA_FVC_initial_filter['AAV'].replace({'\$': '', ',': ''}, regex=True).astype(float)
+NBA_FVC_initial_filter['Value'] = NBA_FVC_initial_filter['Value'].replace({'\$': '', ',': ''}, regex=True).astype(float)
 
 # Convert percentage columns to decimals
-NBA_FVC_filtered['AAV / Salary Cap'] = NBA_FVC_filtered['AAV / Salary Cap'].replace({'%': ''}, regex=True).astype(float) / 100
-NBA_FVC_filtered['AAV / Luxury Tax'] = NBA_FVC_filtered['AAV / Luxury Tax'].replace({'%': ''}, regex=True).astype(float) / 100
-NBA_FVC_filtered['AAV / 1st Apron'] = NBA_FVC_filtered['AAV / 1st Apron'].replace({'%': ''}, regex=True).astype(float) / 100
-NBA_FVC_filtered['AAV / 2nd Apron'] = NBA_FVC_filtered['AAV / 2nd Apron'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['AAV / Salary Cap'] = NBA_FVC_initial_filter['AAV / Salary Cap'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['AAV / Luxury Tax'] = NBA_FVC_initial_filter['AAV / Luxury Tax'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['AAV / 1st Apron'] = NBA_FVC_initial_filter['AAV / 1st Apron'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['AAV / 2nd Apron'] = NBA_FVC_initial_filter['AAV / 2nd Apron'].replace({'%': ''}, regex=True).astype(float) / 100
 
-NBA_FVC_filtered['USG_2Y_Before'] = NBA_FVC_filtered['USG_2Y_Before'].replace({'%': ''}, regex=True).astype(float) / 100
-NBA_FVC_filtered['USG_1Y_Before'] = NBA_FVC_filtered['USG_1Y_Before'].replace({'%': ''}, regex=True).astype(float) / 100
-NBA_FVC_filtered['Avg_USG_Before'] = NBA_FVC_filtered['Avg_USG_Before'].replace({'%': ''}, regex=True).astype(float) / 100
-NBA_FVC_filtered['W_Avg_USG_Before'] = NBA_FVC_filtered['W_Avg_USG_Before'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['USG_2Y_Before'] = NBA_FVC_initial_filter['USG_2Y_Before'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['USG_1Y_Before'] = NBA_FVC_initial_filter['USG_1Y_Before'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['Avg_USG_Before'] = NBA_FVC_initial_filter['Avg_USG_Before'].replace({'%': ''}, regex=True).astype(float) / 100
+NBA_FVC_initial_filter['W_Avg_USG_Before'] = NBA_FVC_initial_filter['W_Avg_USG_Before'].replace({'%': ''}, regex=True).astype(float) / 100
 
 # Create a new column 'AAV vs Cap Space' that shows 1 if 'AAV' is >= 25% of 'Average Cap Space', otherwise 0
-NBA_FVC_filtered['Max Contract Indicator Upgrade'] = NBA_FVC_filtered.apply(lambda row: 1 if row['AAV'] >= (0.25 * row['Avg Salary Cap']) else 0, axis=1)
+NBA_FVC_initial_filter['Max Contract Indicator Upgrade'] = NBA_FVC_initial_filter.apply(lambda row: 1 if row['AAV'] >= (0.25 * row['Avg_Salary_Cap']) else 0, axis=1)
 
 # Display the first few rows of the updated DataFrame
-NBA_FVC_filtered.head()
+NBA_FVC_initial_filter.head()
 
-"""# Exploratory Analysis & Feature Engineering"""
+"""# Exploratory Analysis & Feature Engineering
 
-NBA_FVC_filtered.info()
+## Creating EPM/EW After Columns & Handling Unfisnished Contracts
+"""
 
-"""## Feature Engineering"""
-
-# # Set N/A EW values (that fall during length of contract) to 0
+# Convert EPM & EW 'Before' to Averages (weighted, unweighted, difference between Y2 and Y1) --- did this in google sheets
+# Create AAV vs. Avg. Cap Constraints Columns --- did this in google sheets
 
 import numpy as np
+
+# Convert EPM & EW 'After' to Averages (only consider applicable years)
+ew_after_columns = ['EW_1Y_After', 'EW_2Y_After', 'EW_3Y_After', 'EW_4Y_After', 'EW_5Y_After']
+epm_after_columns = ['EPM_1Y_After', 'EPM_2Y_After', 'EPM_3Y_After', 'EPM_4Y_After', 'EPM_5Y_After']
+
+def calculate_average_after(row, columns):
+    valid_values = row[columns].dropna()  # Drop null values
+    if len(valid_values) > 0:
+        return valid_values.mean()  # Calculate the average of non-null values
+    else:
+        return np.nan  # Return NaN if no valid values
+
+NBA_FVC_initial_filter['Avg_EPM_After'] = NBA_FVC_initial_filter.apply(lambda row: calculate_average_after(row, epm_after_columns), axis=1)
+NBA_FVC_initial_filter['Avg_EW_After'] = NBA_FVC_initial_filter.apply(lambda row: calculate_average_after(row, ew_after_columns), axis=1)
+
+
+# Convert Positon to Guard, Wing, Big (either separate models or 1, 2, 3 numerical indicators) -- might want to further tune manually later
+# Define a function to map position to role (1 = Guard, 2 = Wing, 3 = Big)
+# def map_position_to_role(position):
+#     if position in ['PG', 'SG']:
+#         return 1  # Guard
+#     elif position in ['C']:
+#         return 3  # Big
+#     else:
+#         return 2  # Wing
+
+# # Create a new 'Role' column based on the position mapping
+# NBA_FVC_initial_filter['Role'] = NBA_FVC_initial_filter['Pos'].apply(map_position_to_role)
+
+# Display the updated dataframe with the new binary columns
+NBA_FVC_initial_filter[['Player', 'Pos', 'Role', 'AAV / Salary Cap', 'Avg_USG_Before', 'Avg_EPM_After', 'Avg_EW_After']].head()
+
+# # Set N/A EW values (that fall during length of contract) to 0
 
 # ew_after_columns = ['EW_1Y_After', 'EW_2Y_After', 'EW_3Y_After', 'EW_4Y_After', 'EW_5Y_After']
 
@@ -1751,80 +1786,488 @@ import numpy as np
 #      return row
 
 # # # Apply function to each row in dataframe
-# NBA_FVC_filtered = NBA_FVC_filtered.apply(fill_missing_ew, axis=1)
+# NBA_FVC_initial_filter = NBA_FVC_initial_filter.apply(fill_missing_ew, axis=1)
 
-# Convert EPM & EW 'Before' to Averages (weighted, unweighted, difference between Y2 and Y1) --- did this in google sheets
-# Create AAV vs. Avg. Cap Constraints Columns --- did this in google sheets
+NBA_FVC_initial_filter.info()
 
+# FILTERING OUT UNFINISHED CONTRACTS
 
-# Convert EPM & EW 'After' to Averages (only consider applicable years)
-ew_after_columns = ['EW_1Y_After', 'EW_2Y_After', 'EW_3Y_After', 'EW_4Y_After', 'EW_5Y_After']
-epm_after_columns = ['EPM_1Y_After', 'EPM_2Y_After', 'EPM_3Y_After', 'EPM_4Y_After', 'EPM_5Y_After']
+NBA_FVC_filtered = NBA_FVC_initial_filter[NBA_FVC_initial_filter['C_Over'] == 1].copy()
 
-def calculate_average_after(row, columns):
-    valid_values = row[columns].dropna()  # Drop null values
-    if len(valid_values) > 0:
-        return valid_values.mean()  # Calculate the average of non-null values
+print(f"Number of observations remaining after removing unfinished contracts: {len(NBA_FVC_filtered)}")
+
+"""## Addressing Age Survivorship Bias
+
+### EPM
+"""
+
+# Check for missing values in the relevant columns
+missing_values = NBA_FVC_filtered[['Avg_EPM_After', 'Avg_EW_After', 'Age_At_Start', 'Median_Age',
+                                   'W_Avg_Min_Before', 'W_Avg_USG_Before', 'Role']].isnull().sum()
+print(missing_values)
+
+# DETERMINING THE IMPACT OF AGE ON EPM PERFORMANCE, PER PLAYER (i.e. AGE CURVES PER PLAYER)
+age_df = NBA_FVC_filtered.copy()
+
+# Group data by player
+player_age_groups = age_df.groupby('Player')
+
+# Initialize variables to store total correlation and player count
+total_correlation = 0
+player_count = 0
+
+# Calculate correlation between Median_Age and Avg_EPM_After per player
+for player, group in player_age_groups:
+    if len(group) > 1:  # Only consider players with multiple entries
+        # Check if there's no variation in Median_Age or Avg_EPM_After
+        if np.std(group['Median_Age']) == 0 or np.std(group['Avg_EPM_After']) == 0:
+            continue  # Skip this group if there's no variation
+        correlation = group['Median_Age'].corr(group['Avg_EPM_After'])
+        if pd.notna(correlation):  # Check if correlation is not NaN
+            total_correlation += correlation
+            player_count += 1
+
+# Calculate the average correlation
+if player_count > 0:
+    average_correlation = total_correlation / player_count
+else:
+    average_correlation = None  # In case there were no valid correlations
+
+# Print the average correlation = TRUE AVG. IMPACT OF AGE ON EPM PERFORMANCE
+print(f"Average correlation between Median_Age and Avg_EPM_After: {average_correlation:.4f}")
+
+# AGE CURVE GRAPHS (Median_Age vs. Avg_EPM_After)
+
+import plotly.graph_objects as go
+from scipy.optimize import curve_fit
+
+# Function to fit a quadratic curve
+def quadratic_fit(x, a, b, c):
+    return a * x**2 + b * x + c
+
+# Create the plot
+fig = go.Figure()
+
+all_ages = []
+all_epms = []
+
+# Iterate through all qualified players
+for player, group in player_age_groups:
+    if len(group) > 1:  # Only consider players with multiple entries
+        ages = group['Median_Age']
+        epms = group['Avg_EPM_After']
+
+        # Add individual player curve
+        fig.add_trace(go.Scatter(x=ages, y=epms, mode='markers+lines', name=player,
+                                 line=dict(color='lightblue', width=1),
+                                 marker=dict(color='lightblue', size=4),
+                                 opacity=0.3, showlegend=False))
+
+        all_ages.extend(ages)
+        all_epms.extend(epms)
+
+# Fit a quadratic curve to all data points
+all_ages = np.array(all_ages)
+all_epms = np.array(all_epms)
+popt, _ = curve_fit(quadratic_fit, all_ages, all_epms)
+
+# Generate points for the fitted curve
+x_fit = np.linspace(min(all_ages), max(all_ages), 100)
+y_fit = quadratic_fit(x_fit, *popt)
+
+# Add the fitted curve
+fig.add_trace(go.Scatter(x=x_fit, y=y_fit, mode='lines', name='Quadratic Fit',
+                         line=dict(color='red', width=3)))
+
+# Update layout
+fig.update_layout(title='Age Curves for All Qualified Players',
+                  xaxis_title='Median Age',
+                  yaxis_title='Avg EPM After',
+                  showlegend=True)
+
+# Show the plot
+fig.show()
+
+# Print the quadratic fit parameters
+print(f"Quadratic fit: y = {popt[0]:.4f}x^2 + {popt[1]:.4f}x + {popt[2]:.4f}")
+
+# Calculate the age of peak performance
+peak_age = -popt[1] / (2 * popt[0])
+print(f"Estimated age of peak EPM performance: {peak_age:.2f}")
+
+# Plotting Packages
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+
+# Create a long-format dataset
+Peak_Age_EPM = NBA_FVC_initial_filter.copy()
+
+long_df = pd.melt(Peak_Age_EPM,
+                  id_vars=['Player', 'Age_At_Start'],
+                  value_vars=['EPM_2Y_Before', 'EPM_1Y_Before', 'EPM_1Y_After', 'EPM_2Y_After', 'EPM_3Y_After', 'EPM_4Y_After', 'EPM_5Y_After'],
+                  var_name='Season',
+                  value_name='EPM')
+
+def calculate_age(row):
+    age_at_start = row['Age_At_Start']
+    season = row['Season']
+    if season == 'EPM_2Y_Before':
+        return age_at_start - 2
+    elif season == 'EPM_1Y_Before':
+        return age_at_start - 1
+    elif season == 'EPM_1Y_After':
+        return age_at_start
+    elif season == 'EPM_2Y_After':
+        return age_at_start + 1
+    elif season == 'EPM_3Y_After':
+        return age_at_start + 2
+    elif season == 'EPM_4Y_After':
+        return age_at_start + 3
+    elif season == 'EPM_5Y_After':
+        return age_at_start + 4
     else:
-        return np.nan  # Return NaN if no valid values
+        return age_at_start
 
-NBA_FVC_filtered['Avg_EPM_After'] = NBA_FVC_filtered.apply(lambda row: calculate_average_after(row, epm_after_columns), axis=1)
-NBA_FVC_filtered['Avg_EW_After'] = NBA_FVC_filtered.apply(lambda row: calculate_average_after(row, ew_after_columns), axis=1)
+long_df['Age'] = long_df.apply(calculate_age, axis=1)
 
+# Group by Age and calculate average EPM
+avg_epm_by_age = long_df.groupby('Age')['EPM'].mean().reset_index()
 
-# Convert Positon to Guard, Wing, Big (either separate models or 1, 2, 3 numerical indicators) -- might want to further tune manually later
-# Define a function to map position to role (1 = Guard, 2 = Wing, 3 = Big)
-# def map_position_to_role(position):
-#     if position in ['PG', 'SG']:
-#         return 1  # Guard
-#     elif position in ['C']:
-#         return 3  # Big
-#     else:
-#         return 2  # Wing
+# Create the Plotly bar graph
+fig = px.bar(avg_epm_by_age, x='Age', y='EPM', title='Average EPM by Age')
+fig.update_layout(xaxis_title='Age', yaxis_title='Average EPM')
 
-# # Create a new 'Role' column based on the position mapping
-# NBA_FVC_filtered['Role'] = NBA_FVC_filtered['Pos'].apply(map_position_to_role)
+# Show the plot
+fig.show()
 
-# # Create binary indicator columns for each role
-# NBA_FVC_filtered['Is_Guard'] = (NBA_FVC_filtered['Role'] == 1).astype(int)
-# NBA_FVC_filtered['Is_Wing'] = (NBA_FVC_filtered['Role'] == 2).astype(int)
-# NBA_FVC_filtered['Is_Big'] = (NBA_FVC_filtered['Role'] == 3).astype(int)
+# DETERMINING THE "POSITIVE" IMPACT OF AGE ON EPM PERFORMANCE, PER PLAYER, APPROACHING PEAK AGE 29
 
-# Display the updated dataframe with the new binary columns
-NBA_FVC_filtered[['Player', 'Pos', 'Role', 'AAV / Salary Cap', 'Avg_USG_Before', 'Avg_EPM_After', 'Avg_EW_After']].head()
+from sklearn.linear_model import LinearRegression
 
-NBA_FVC_filtered.to_csv('NBA_FVC_filtered.csv', index=False)
+# Define the peak age
+peak_age = 29
+
+# Group data by player
+player_age_groups = age_df.groupby('Player')
+
+# Initialize variables to store total positive correlation, regression coefficient, and player count
+total_positive_correlation = 0
+total_regression_coefficient = 0
+positive_player_count = 0
+
+# Calculate correlation and regression coefficient between Median_Age and Avg_EPM_After per player
+for player, group in player_age_groups:
+    if len(group) > 1:  # Only consider players with multiple entries
+        # Consider only players below peak or at peak (to focus on the positive trend)
+        positive_impact_group = group[group['Median_Age'] <= peak_age]
+
+        # Check if the positive_impact_group has at least one row
+        if len(positive_impact_group) == 0:
+            continue  # Skip this group if it has no rows
+
+        # Check if there's no variation in Median_Age or Avg_EPM_After
+        if np.std(positive_impact_group['Median_Age']) == 0 or np.std(positive_impact_group['Avg_EPM_After']) == 0:
+            continue  # Skip this group if there's no variation
+
+        # Calculate the correlation
+        correlation = positive_impact_group['Median_Age'].corr(positive_impact_group['Avg_EPM_After'])
+
+        # Calculate the regression coefficient (slope)
+        X = positive_impact_group[['Median_Age']].values.reshape(-1, 1)
+        y = positive_impact_group['Avg_EPM_After'].values
+
+        if len(X) > 1 and len(y) > 1:  # Ensure there are enough samples for regression
+            reg = LinearRegression().fit(X, y)
+            regression_coefficient = reg.coef_[0]  # Get the slope of the regression line
+
+            if pd.notna(correlation):  # Check if correlation is not NaN
+                total_positive_correlation += correlation
+                total_regression_coefficient += regression_coefficient
+                positive_player_count += 1
+
+# Calculate the average positive correlation and regression coefficient
+if positive_player_count > 0:
+    average_positive_correlation = total_positive_correlation / positive_player_count
+    average_regression_coefficient = total_regression_coefficient / positive_player_count
+else:
+    average_positive_correlation = None  # In case there were no valid correlations
+    average_regression_coefficient = None  # In case there were no valid regression coefficients
+
+# Print the average positive correlation and regression coefficient
+print(f"Average correlation between Median_Age and Avg_EPM_After approaching peak age 29: {average_positive_correlation:.4f}")
+print(f"Average regression coefficient for Median_Age on Avg_EPM_After approaching peak age 29: {average_regression_coefficient:.4f}\n")
+print(f"these results are counter-intuitive; likely a byproduct of rookie max extensions + not having rookie contract performance data (our data isn't capturing career progression from start to peak)")
+
+# DETERMINING THE ADVERSE IMPACT OF AGE ON EPM PERFORMANCE, PER PLAYER, POST PEAK AGE 29
+
+# Define the peak age
+peak_age = 29
+
+# Group data by player
+player_age_groups = age_df.groupby('Player')
+
+# Initialize variables to store total adverse correlation, regression coefficient, and player count
+total_adverse_correlation = 0
+total_regression_coefficient = 0
+adverse_player_count = 0
+
+# Calculate correlation and regression coefficient between Median_Age and Avg_EPM_After per player post peak age 29
+for player, group in player_age_groups:
+    if len(group) > 1:  # Only consider players with multiple entries
+        # Consider only players above peak age (to focus on the adverse trend)
+        adverse_impact_group = group[group['Median_Age'] > peak_age]
+
+        # Check if the adverse_impact_group has at least one row
+        if len(adverse_impact_group) == 0:
+            continue  # Skip this group if it has no rows
+
+        # Check if there's no variation in Median_Age or Avg_EPM_After
+        if np.std(adverse_impact_group['Median_Age']) == 0 or np.std(adverse_impact_group['Avg_EPM_After']) == 0:
+            continue  # Skip this group if there's no variation
+
+        # Calculate the correlation
+        correlation = adverse_impact_group['Median_Age'].corr(adverse_impact_group['Avg_EPM_After'])
+
+        # Calculate the regression coefficient (slope)
+        X = adverse_impact_group[['Median_Age']].values.reshape(-1, 1)
+        y = adverse_impact_group['Avg_EPM_After'].values
+
+        if len(X) > 1 and len(y) > 1:  # Ensure there are enough samples for regression
+            reg = LinearRegression().fit(X, y)
+            regression_coefficient = reg.coef_[0]  # Get the slope of the regression line
+
+            if pd.notna(correlation):  # Check if correlation is not NaN
+                total_adverse_correlation += correlation
+                total_regression_coefficient += regression_coefficient
+                adverse_player_count += 1
+
+# Calculate the average adverse correlation and regression coefficient
+if adverse_player_count > 0:
+    average_adverse_correlation = total_adverse_correlation / adverse_player_count
+    average_regression_coefficient = total_regression_coefficient / adverse_player_count
+else:
+    average_adverse_correlation = None  # In case there were no valid correlations
+    average_regression_coefficient = None  # In case there were no valid regression coefficients
+
+# Print the average adverse correlation and regression coefficient
+print(f"Average correlation between Median_Age and Avg_EPM_After post peak age 29: {average_adverse_correlation:.4f}")
+print(f"Average regression coefficient for Median_Age on Avg_EPM_After post peak age 29: {average_regression_coefficient:.4f}\n")
+print(f'For every increase in Median_Age by one (post age 29), we expect Avg_EPM_After to decrease by {average_regression_coefficient:.4f} units')
+
+"""### EW"""
+
+# DETERMINING THE IMPACT OF AGE ON EW PERFORMANCE, PER PLAYER (i.e. AGE CURVES PER PLAYER)
+
+# Group data by player
+player_age_groups = age_df.groupby('Player')
+
+# Initialize variables to store total correlation and player count
+total_correlation = 0
+player_count = 0
+
+# Calculate correlation between Median_Age and Avg_EW_After per player
+for player, group in player_age_groups:
+    if len(group) > 1:  # Only consider players with multiple entries
+        # Check if there's no variation in Median_Age or Avg_EW_After
+        if np.std(group['Median_Age']) == 0 or np.std(group['Avg_EW_After']) == 0:
+            continue  # Skip this group if there's no variation
+        correlation = group['Median_Age'].corr(group['Avg_EW_After'])
+        if pd.notna(correlation):  # Check if correlation is not NaN
+            total_correlation += correlation
+            player_count += 1
+
+# Calculate the average correlation
+if player_count > 0:
+    average_correlation = total_correlation / player_count
+else:
+    average_correlation = None  # In case there were no valid correlations
+
+# Print the average correlation = TRUE AVG. IMPACT OF AGE ON EW PERFORMANCE
+print(f"Average correlation between Median_Age and Avg_EW_After: {average_correlation:.4f}")
+
+# AGE CURVE GRAPHS (Median_Age vs. Avg_EW_After)
+
+import plotly.graph_objects as go
+from scipy.optimize import curve_fit
+
+# Function to fit a quadratic curve
+def quadratic_fit(x, a, b, c):
+    return a * x**2 + b * x + c
+
+# Create the plot
+fig = go.Figure()
+
+all_ages = []
+all_ews = []
+
+# Iterate through all qualified players
+for player, group in player_age_groups:
+    if len(group) > 1:  # Only consider players with multiple entries
+        ages = group['Median_Age']
+        ews = group['Avg_EW_After']
+
+        # Add individual player curve
+        fig.add_trace(go.Scatter(x=ages, y=ews, mode='markers+lines', name=player,
+                                 line=dict(color='lightblue', width=1),
+                                 marker=dict(color='lightblue', size=4),
+                                 opacity=0.3, showlegend=False))
+
+        all_ages.extend(ages)
+        all_ews.extend(ews)
+
+# Fit a quadratic curve to all data points
+all_ages = np.array(all_ages)
+all_ews = np.array(all_ews)
+popt, _ = curve_fit(quadratic_fit, all_ages, all_ews)
+
+# Generate points for the fitted curve
+x_fit = np.linspace(min(all_ages), max(all_ages), 100)
+y_fit = quadratic_fit(x_fit, *popt)
+
+# Add the fitted curve
+fig.add_trace(go.Scatter(x=x_fit, y=y_fit, mode='lines', name='Quadratic Fit',
+                         line=dict(color='red', width=3)))
+
+# Update layout
+fig.update_layout(title='Age Curves for All Qualified Players',
+                  xaxis_title='Median Age',
+                  yaxis_title='Avg EW After',
+                  showlegend=True)
+
+# Show the plot
+fig.show()
+
+# Print the quadratic fit parameters
+print(f"Quadratic fit: y = {popt[0]:.4f}x^2 + {popt[1]:.4f}x + {popt[2]:.4f}")
+
+# Calculate the age of peak performance
+peak_age = -popt[1] / (2 * popt[0])
+print(f"Estimated age of peak EW performance: {peak_age:.2f}")
+
+# Create a long-format dataset
+Peak_Age_EW = NBA_FVC_initial_filter.copy()
+
+long_df = pd.melt(Peak_Age_EW,
+                  id_vars=['Player', 'Age_At_Start'],
+                  value_vars=['EW_2Y_Before', 'EW_1Y_Before', 'EW_1Y_After', 'EW_2Y_After', 'EW_3Y_After', 'EW_4Y_After', 'EW_5Y_After'],
+                  var_name='Season',
+                  value_name='EW')
+
+def calculate_age(row):
+    age_at_start = row['Age_At_Start']
+    season = row['Season']
+    if season == 'EW_2Y_Before':
+        return age_at_start - 2
+    elif season == 'EW_1Y_Before':
+        return age_at_start - 1
+    elif season == 'EW_1Y_After':
+        return age_at_start
+    elif season == 'EW_2Y_After':
+        return age_at_start + 1
+    elif season == 'EW_3Y_After':
+        return age_at_start + 2
+    elif season == 'EW_4Y_After':
+        return age_at_start + 3
+    elif season == 'EW_5Y_After':
+        return age_at_start + 4
+    else:
+        return age_at_start
+
+long_df['Age'] = long_df.apply(calculate_age, axis=1)
+
+# Group by Age and calculate average EW
+avg_epm_by_age = long_df.groupby('Age')['EW'].mean().reset_index()
+
+# Create the Plotly bar graph
+fig = px.bar(avg_epm_by_age, x='Age', y='EW', title='Average EW by Age')
+fig.update_layout(xaxis_title='Age', yaxis_title='Average EW')
+
+# Show the plot
+fig.show()
+
+# DETERMINING THE ADVERSE IMPACT OF AGE ON EW PERFORMANCE, PER PLAYER, POST PEAK AGE 29
+
+# Define the peak age
+peak_age = 29
+
+# Group data by player
+player_age_groups = age_df.groupby('Player')
+
+# Initialize variables to store total adverse correlation, regression coefficient, and player count
+total_adverse_correlation = 0
+total_regression_coefficient = 0
+adverse_player_count = 0
+
+# Calculate correlation and regression coefficient between Median_Age and Avg_EW_After per player post peak age 29
+for player, group in player_age_groups:
+    if len(group) > 1:  # Only consider players with multiple entries
+        # Consider only players above peak age (to focus on the adverse trend)
+        adverse_impact_group = group[group['Median_Age'] > peak_age]
+
+        # Check if the adverse_impact_group has at least one row
+        if len(adverse_impact_group) == 0:
+            continue  # Skip this group if it has no rows
+
+        # Check if there's no variation in Median_Age or Avg_EW_After
+        if np.std(adverse_impact_group['Median_Age']) == 0 or np.std(adverse_impact_group['Avg_EW_After']) == 0:
+            continue  # Skip this group if there's no variation
+
+        # Calculate the correlation
+        correlation = adverse_impact_group['Median_Age'].corr(adverse_impact_group['Avg_EW_After'])
+
+        # Calculate the regression coefficient (slope)
+        X = adverse_impact_group[['Median_Age']].values.reshape(-1, 1)
+        y = adverse_impact_group['Avg_EW_After'].values
+
+        if len(X) > 1 and len(y) > 1:  # Ensure there are enough samples for regression
+            reg = LinearRegression().fit(X, y)
+            regression_coefficient = reg.coef_[0]  # Get the slope of the regression line
+
+            if pd.notna(correlation):  # Check if correlation is not NaN
+                total_adverse_correlation += correlation
+                total_regression_coefficient += regression_coefficient
+                adverse_player_count += 1
+
+# Calculate the average adverse correlation and regression coefficient
+if adverse_player_count > 0:
+    average_adverse_correlation = total_adverse_correlation / adverse_player_count
+    average_regression_coefficient = total_regression_coefficient / adverse_player_count
+else:
+    average_adverse_correlation = None  # In case there were no valid correlations
+    average_regression_coefficient = None  # In case there were no valid regression coefficients
+
+# Print the average adverse correlation and regression coefficient
+print(f"Average correlation between Median_Age and Avg_EW_After post peak age 29: {average_adverse_correlation:.4f}")
+print(f"Average regression coefficient for Median_Age on Avg_EW_After post peak age 29: {average_regression_coefficient:.4f}\n")
+print(f'For every increase in Median_Age by one (post age 29), we expect Avg_EW_After to decrease by {average_regression_coefficient:.4f} units')
 
 """## Visualizations"""
 
 NBA_FVC_filtered.columns
 
-# Correlation Matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
+# NEW AGE COLUMNS CORRELATION MATRIX
 
-# Select only numeric columns
-num_NBA_FVC_filtered = df.select_dtypes(include=[np.number]) # this creates problems if you leave it as NBA_FVC_filtered
+# Specify columns for correlation
+age_columns = [
+    'Age_At_Start', 'Median_Age', 'Peak_Age_Range', 'Far_From_Peak',
+    'Avg_EPM_After', 'Avg_EW_After', 'AAV / Salary Cap'
+]
 
-# # Compute the correlation matrix
-# corr_matrix = num_NBA_FVC_filtered.corr()
+# Calculate correlation matrix
+correlation_matrix = NBA_FVC_filtered[age_columns].corr()
 
-# # Plot the correlation matrix using Seaborn's heatmap
-# plt.figure(figsize=(10, 8))
-# sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm",
-#             cbar=True, linewidths=0.5, linecolor='gray', annot_kws={"size": 7})
-
-# # Customize the plot labels
-# plt.xticks(rotation=45, ha='right', fontsize=8)
-# plt.yticks(rotation=0, fontsize=8)
-
-# # Show the plot
-# plt.show()
+# Plot heatmap
+plt.figure(figsize=(12, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".3f", linewidths=0.5)
+plt.title('Age Correlation Matrix')
+plt.show()
 
 # Specify columns for correlation
 production_columns = [
-    'Role', 'Age At Signing', 'Avg_EPM_Before', 'W_Avg_EPM_Before', 'Change_EPM_Before', 'Avg_EPM_After',
-    'Avg_EW_Before', 'W_Avg_EW_Before', 'Change_EW_Before', 'Avg_EW_After',
+    'Role', 'W_Avg_GP_Before', 'W_Avg_MPG_Before', 'W_Avg_Min_Before', 'W_Avg_USG_Before',
+    'Avg_EPM_Before', 'W_Avg_EPM_Before', 'Age_Adj_EPM_Before', 'Avg_EPM_After',
+    'Avg_EW_Before', 'W_Avg_EW_Before', 'Age_Adj_EW_Before', 'Avg_EW_After'
 ]
 
 # Calculate correlation matrix
@@ -1836,27 +2279,28 @@ sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".3f", linewidt
 plt.title('EPM/EW Correlation Matrix')
 plt.show()
 
-# Specify columns for correlation
-new_ft_columns = [
-    'Avg_GP_Before', 'W_Avg_GP_Before', 'Avg_MPG_Before', 'W_Avg_MPG_Before', 'W_Avg_Min_Before', 'Avg_USG_Before', 'W_Avg_USG_Before',
-    'W_Avg_EPM_Before', 'Avg_EPM_After', 'W_Avg_EW_Before', 'Avg_EW_After', 'AAV / Salary Cap',
-]
+# # Specify columns for correlation
+# new_ft_columns = [
+#     'Median_Age', 'Avg_GP_Before', 'W_Avg_GP_Before', 'Avg_MPG_Before', 'W_Avg_MPG_Before', 'W_Avg_Min_Before', 'Avg_USG_Before', 'W_Avg_USG_Before',
+#     'W_Avg_EPM_Before', 'Age Adj. EPM Before', 'Avg_EPM_After', 'W_Avg_EW_Before', 'Age Adj. EW Before', 'Avg_EW_After', 'AAV / Salary Cap',
+# ]
 
-# Calculate correlation matrix
-correlation_matrix = NBA_FVC_filtered[new_ft_columns].corr()
+# # Calculate correlation matrix
+# correlation_matrix = NBA_FVC_filtered[new_ft_columns].corr()
 
-# Plot heatmap
-plt.figure(figsize=(12, 8))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".3f", linewidths=0.5)
-plt.title('GP / MPG / USG Correlation Matrix')
-plt.show()
+# # Plot heatmap
+# plt.figure(figsize=(12, 8))
+# sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".3f", linewidths=0.5)
+# plt.title('GP / MPG / USG Correlation Matrix')
+# plt.show()
 
 # Specify columns for correlation
 contract_columns = [
-    'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before',
-    'Avg_EPM_Before', 'W_Avg_EPM_Before', 'Change_EPM_Before', 'Avg_EPM_After',
-    'Avg_EW_Before', 'W_Avg_EW_Before', 'Change_EW_Before', 'Avg_EW_After',
-    'AAV / Salary Cap', 'AAV / Luxury Tax', 'AAV / 1st Apron', 'AAV / 2nd Apron',
+    'Role', 'Median_Age', 'Far_From_Peak',
+    'W_Avg_MPG_Before', 'W_Avg_USG_Before',
+    'W_Avg_EPM_Before', 'Age_Adj_EPM_Before', 'Avg_EPM_After',
+    'W_Avg_EW_Before', 'Age_Adj_EW_Before', 'Avg_EW_After',
+    'AAV / Salary Cap', 'AAV / 2nd Apron'
 ]
 
 # Calculate correlation matrix
@@ -1873,165 +2317,220 @@ plt.show()
 summary_stats = NBA_FVC_filtered[contract_columns].describe()
 summary_stats
 
-import matplotlib.pyplot as plt
+# Create scatter plot for 'Age_At_Start' vs 'Avg_EPM_After'
+fig_age_signing = px.scatter(
+    NBA_FVC_filtered,
+    x='Age_At_Start',
+    y='Avg_EPM_After',
+    hover_name='Player',  # Hover will show player name
+    hover_data={'Age_At_Start': True, 'Avg_EPM_After': True},  # Hover to show these fields
+    title='Age At Start vs Average EPM After',
+    trendline='ols'  # linear trendline (Ordinary Least Squares)
+)
 
+fig_age_signing.show()
 
-# List of column pairs you want to compare
-# Example: [('column1', 'column2'), ('column3', 'column4')]
-column_pairs = [('W_Avg_EPM_Before', 'EPM_1Y_After'),
-                ('W_Avg_EW_Before', 'EW_1Y_After'),
-                ('Age At Signing', 'AAV'),
-                ('AAV', 'Start'),
-                ('AAV / Salary Cap','EPM_1Y_After')]  # Replace with actual column names
+# Create scatter plot for 'Median Age' vs 'Avg_EPM_After'
+fig_median_age = px.scatter(
+    NBA_FVC_filtered,
+    x='Median_Age',
+    y='Avg_EPM_After',
+    hover_name='Player',  # Hover will show player name
+    hover_data={'Median_Age': True, 'Avg_EPM_After': True},  # Hover to show these fields
+    title='Median Age vs Average EPM After',
+    trendline='ols'  # linear trendline (Ordinary Least Squares)
+)
 
-# Create scatter plots for the specified column pairs
-for col1, col2 in column_pairs:
-    plt.figure()
-    plt.scatter(NBA_FVC_filtered[col1], NBA_FVC_filtered[col2])
-    plt.xlabel(col1)
-    plt.ylabel(col2)
-    plt.title(f'Scatter plot of {col1} vs. {col2}')
-    plt.show()
+fig_median_age.show()
 
+# Create scatter plot for 'Far_From_Peak' vs 'Avg_EPM_After'
+fig_distance_peak = px.scatter(
+    NBA_FVC_filtered,
+    x='Far_From_Peak',
+    y='Avg_EPM_After',
+    hover_name='Player',  # Hover will show player name
+    hover_data={'Far_From_Peak': True, 'Avg_EPM_After': True},  # Hover to show these fields
+    title='Distance From Peak vs Average EPM After',
+    trendline='ols'  # linear trendline (Ordinary Least Squares)
+)
 
+fig_distance_peak.show()
 
-"""# Modeling"""
+# # List of column pairs you want to compare
+# column_pairs = [('W_Avg_EPM_Before', 'EPM_1Y_After'),
+#                 ('W_Avg_EW_Before', 'EW_1Y_After'),
+#                 ('Age At Signing', 'AAV'),
+#                 ('AAV', 'Start'),
+#                 ('AAV / Salary Cap','EPM_1Y_After')]  # Replace with actual column names
 
-# # Convert Data to Z-Scores (the way we are using 'Role' probably needs to change to account for 'tweeners')
+# # Create scatter plots for the specified column pairs
+# for col1, col2 in column_pairs:
+#     plt.figure()
+#     plt.scatter(NBA_FVC_filtered[col1], NBA_FVC_filtered[col2])
+#     plt.xlabel(col1)
+#     plt.ylabel(col2)
+#     plt.title(f'Scatter plot of {col1} vs. {col2}')
+#     plt.show()
 
-# from sklearn.preprocessing import StandardScaler
+contract_changes = NBA_FVC_initial_filter.copy()
 
-# columns_to_standardize = [
-#     'Role', 'Age At Signing', 'W_Avg_EPM_Before', 'W_Avg_EW_Before'
-# ]
-# # 'Avg_EPM_After', 'Avg_EW_After'
+# Group by 'Start' year and calculate the average 'AAV / Salary Cap'
+avg_aav_by_year = contract_changes.groupby('Start')['AAV / Salary Cap'].mean().reset_index()
 
-# # Initialize the StandardScaler
-# scaler = StandardScaler()
+# Create the Plotly bar graph
+fig = px.bar(avg_aav_by_year,
+             x='Start',
+             y='AAV / Salary Cap',
+             title='Average AAV / Salary Cap by Year',
+             labels={'Start': 'Year', 'AAV / Salary Cap': 'Avg. AAV / Salary Cap'},
+             text='AAV / Salary Cap')
 
-# # Fit and transform the selected columns
-# NBA_FVC_filtered[columns_to_standardize] = scaler.fit_transform(NBA_FVC_filtered[columns_to_standardize])
+# Customize the layout
+fig.update_traces(texttemplate='%{text:.2%}', textposition='outside')
+fig.update_layout(
+    xaxis_title='Year',
+    yaxis_title='Average AAV / Salary Cap',
+    yaxis_tickformat='.2%',
+    xaxis=dict(tickmode='linear', dtick=1)  # Ensure all years are shown on x-axis
+)
 
-# NBA_FVC_filtered[['Player', 'Role', 'Age At Signing', 'W_Avg_EPM_Before', 'Avg_EPM_After', 'W_Avg_EW_Before', 'Avg_EW_After']].head()
+# Show the plot
+fig.show()
 
-"""## EPM"""
+# Find the year with the highest average AAV / Salary Cap
+max_year = avg_aav_by_year.loc[avg_aav_by_year['AAV / Salary Cap'].idxmax(), 'Start']
+max_value = avg_aav_by_year['AAV / Salary Cap'].max()
+
+print(f"Year with highest Avg. AAV / Salary Cap: {max_year} ({max_value:.2%})")
+
+# Calculate year-over-year changes
+avg_aav_by_year['YoY_Change'] = avg_aav_by_year['AAV / Salary Cap'].pct_change()
+
+print("\nYear-over-Year Changes:")
+print(avg_aav_by_year[['Start', 'YoY_Change']].to_string(index=False))
+
+"""# EPM & EW Models
+
+## EPM
+"""
+
+from sklearn.model_selection import train_test_split
+
+# 80/20 TRAIN/TEST SPLIT
+NBA_FVC_training_set, NBA_FVC_test_set = train_test_split(NBA_FVC_filtered, test_size=0.2, random_state=42)
+
+# Check the sizes of each set
+print(f"Training set size: {len(NBA_FVC_training_set)}")
+print(f"Test set size: {len(NBA_FVC_test_set)}\n")
+
+# NBA_FVC_training_set = NBA_FVC_filtered[(NBA_FVC_filtered['Start'] >= 2014) & (NBA_FVC_filtered['Start'] <= 2022)]
+# NBA_FVC_test_set = NBA_FVC_filtered[NBA_FVC_filtered['Start'] == 2023].copy()
+
+# FILTER FOR 2024/25 DATA (DEPLOYMENT SET)
+NBA_FVC_2024 = NBA_FVC_initial_filter[NBA_FVC_initial_filter['Start'] == 2024]
 
 # BASELINE MODELS
-
 from sklearn.metrics import mean_squared_error
-
-NBA_FVC_training_set = NBA_FVC_filtered[(NBA_FVC_filtered['Start'] >= 2014) & (NBA_FVC_filtered['Start'] <= 2022)]
-NBA_FVC_test_set = NBA_FVC_filtered[NBA_FVC_filtered['Start'] == 2023].copy()
-
 NBA_FVC_mean_epm = NBA_FVC_filtered['Avg_EPM_After'].mean()
 NBA_FVC_test_set['Predicted_Avg_EPM'] = NBA_FVC_mean_epm
 NBA_FVC_baseline_rmse = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Predicted_Avg_EPM']))
 print("Baseline RMSE:", NBA_FVC_baseline_rmse.round(4), "Mean:", NBA_FVC_mean_epm.round(4))
 
-#LASSO
-# Import necessary libraries
-from sklearn.linear_model import Lasso
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import make_pipeline
-from sklearn.metrics import mean_squared_error, r2_score
-import numpy as np
-
-# Define the predictors and the target variable
-NBA_FVC_EPM_predictors = ['Role', 'Guard', 'Wing', 'Big', 'Age At Signing', 'Age At End', 'Median Age',
-                          'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EPM_Before',
-                          'Age Adj. EPM Before', 'AAV / Salary Cap']
-NBA_FVC_EPM_target = 'Avg_EPM_After'
-
-# Create an imputer to fill NaN values with 0 for Guard, Wing, and Big
-imputer = SimpleImputer(strategy='constant', fill_value=0)
-
-# Initialize the Lasso model with an alpha of 0.01
-lasso_model = Lasso(alpha=0.01)
-
-# Create a pipeline that first imputes missing values and then fits the Lasso model
-lasso_pipeline = make_pipeline(imputer, lasso_model)
-
-# Fit the Lasso model using the pipeline
-lasso_pipeline.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
-
-# Make predictions on the test set
-NBA_FVC_test_set['Lasso_Predicted_Avg_EPM'] = lasso_pipeline.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
-
-# Calculate RMSE and R-squared for the Lasso model
-lasso_rmse = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Lasso_Predicted_Avg_EPM']))
-lasso_r2 = r2_score(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Lasso_Predicted_Avg_EPM'])
-
-# Print the RMSE and R-squared values
-print("Lasso RMSE:", lasso_rmse.round(4))
-print("Lasso R-squared:", lasso_r2.round(4))
-
-# Print the Lasso coefficients to see which predictors were selected
-print("Lasso Coefficients:", lasso_pipeline.named_steps['lasso'].coef_)
-
-# You can inspect the coefficients for each predictor to understand which are more important.
-# Optionally, you can also display them alongside their corresponding predictor names like this:
-for predictor, coef in zip(NBA_FVC_EPM_predictors, lasso_pipeline.named_steps['lasso'].coef_):
-    print(f"{predictor}: {coef:.4f}")
-
-#RIDGE
-
-from sklearn.linear_model import Ridge, ElasticNet
-
-ridge_model = Ridge(alpha=1.0)
-ridge_model.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
-NBA_FVC_test_set['Ridge_Predicted_Avg_EPM'] = ridge_model.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
-
-ridge_rmse = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Ridge_Predicted_Avg_EPM']))
-ridge_r2 = ridge_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
-
-print("Ridge RMSE:", ridge_rmse)
-print("Ridge R-squared:", ridge_r2)
-
-# Elastic Net
-elastic_model = ElasticNet(alpha=0.1, l1_ratio=0.5)
-elastic_model.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
-NBA_FVC_test_set['Elastic_Predicted_Avg_EPM'] = elastic_model.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
-
-elastic_rmse = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Elastic_Predicted_Avg_EPM']))
-elastic_r2 = elastic_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
-
-print("ElasticNet RMSE:", elastic_rmse)
-print("ElasticNet R-squared:", elastic_r2)
-
 ## Checking for NaN predictor values
 # NBA_FVC_training_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EPM_Before', 'Avg_EPM_After']]
 
-# SIMPLE LINEAR EPM MODEL
+# PRE-PROCESS (NORMALIZE) PREDICTOR DATA INTO Z-SCORES
 
-from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
 
-# Define predictors and target
-NBA_FVC_EPM_predictors = ['Role', 'W_Avg_Min_Before', 'W_Avg_EPM_Before']
+# Define numerical predictors (excluding the binary variable 'Peak_Age_Range' from standardization)
+# numerical_predictors = ['Far_From_Peak', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before']
+numerical_predictors = ['W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before']
+
+# Standardize only the numerical predictors
+scaler = StandardScaler()
+
+NBA_FVC_training_set[numerical_predictors] = scaler.fit_transform(NBA_FVC_training_set[numerical_predictors])
+NBA_FVC_test_set[numerical_predictors] = scaler.transform(NBA_FVC_test_set[numerical_predictors])
+
+NBA_FVC_2024[numerical_predictors] = scaler.transform(NBA_FVC_2024[numerical_predictors])
+
+# Include 'Peak_Age_Range' in the full set of predictors
+NBA_FVC_EPM_predictors = numerical_predictors + ['Peak_Age_Range']
+# NBA_FVC_EPM_predictors = numerical_predictors
+
+"""### Individual Models"""
+
+# LASSO EPM MODEL
+
+from sklearn.linear_model import Lasso
+from sklearn.metrics import mean_squared_error
+
 NBA_FVC_EPM_target = 'Avg_EPM_After'
 
-## Fill missing values (NaN) in 'Is_Guard', 'Is_Wing', and 'Is_Big' columns with 0
-# NBA_FVC_training_set[['Is_Guard', 'Is_Wing', 'Is_Big']] = NBA_FVC_training_set[['Is_Guard', 'Is_Wing', 'Is_Big']].fillna(0)
-# NBA_FVC_test_set[['Is_Guard', 'Is_Wing', 'Is_Big']] = NBA_FVC_test_set[['Is_Guard', 'Is_Wing', 'Is_Big']].fillna(0)
-
-# Create and train the linear model
-NBA_FVC_EPM_model = LinearRegression()
-NBA_FVC_EPM_model.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
+# Create and train the Lasso model (increase alpha to encourage feature selection)
+alpha_value = 0.1
+NBA_FVC_EPM_lasso_model = Lasso(alpha=alpha_value)
+NBA_FVC_EPM_lasso_model.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
 
 # Make predictions on the test set
-NBA_FVC_test_set['Linear_Predicted_Avg_EPM'] = NBA_FVC_EPM_model.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
+NBA_FVC_test_set['Lasso_Predicted_Avg_EPM'] = NBA_FVC_EPM_lasso_model.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
+
+# # Adjust predictions for players older than 29
+# age_adjustment_factor = -0.7612  # The discovered coefficient
+# NBA_FVC_test_set['Age_Adjustment'] = NBA_FVC_test_set.apply(
+#     lambda row: 0.05 * (age_adjustment_factor * (row['Median_Age'] - 29)) if row['Median_Age'] > 29 else 0, axis=1) # modify multiplier as needed
+
+# NBA_FVC_test_set['Lasso_Predicted_Avg_EPM'] = NBA_FVC_test_set['Lasso_Predicted_Avg_EPM'] + NBA_FVC_test_set['Age_Adjustment']
 
 # Calculate RMSE and R-squared
-NBA_FVC_EPM_rmse_lm = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Linear_Predicted_Avg_EPM']))
-print("LM RMSE:", NBA_FVC_EPM_rmse_lm.round(4))
+NBA_FVC_EPM_rmse_lasso = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Lasso_Predicted_Avg_EPM']))
+print("Lasso RMSE:", round(NBA_FVC_EPM_rmse_lasso, 4))
 
-NBA_FVC_EPM_r2_lm = NBA_FVC_EPM_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
-print("LM R-squared:", NBA_FVC_EPM_r2_lm.round(4))
+NBA_FVC_EPM_r2_lasso = NBA_FVC_EPM_lasso_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
+print("Lasso R-squared:", round(NBA_FVC_EPM_r2_lasso, 4))
+
+# Get the coefficients and identify which predictors are kept
+lasso_coefficients = pd.Series(NBA_FVC_EPM_lasso_model.coef_, index=NBA_FVC_EPM_predictors)
+print()
+print("Lasso Coefficients:")
+print(lasso_coefficients)
 
 # Add a residual column to the test set (Residual = Predicted - Actual)
-NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['Linear_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
+NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['Lasso_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
 
 # Display the selected columns with residuals
-NBA_FVC_test_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EPM_Before', 'Linear_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
+NBA_FVC_test_set[['Player', 'Role', 'Median_Age', 'Far_From_Peak', 'Peak_Age_Range', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'Lasso_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
+
+# RIDGE EPM MODEL
+
+from sklearn.linear_model import Ridge
+
+# Create and train the Ridge model (alpha controls regularization strength)
+alpha_value = 0.1
+NBA_FVC_EPM_ridge_model = Ridge(alpha=alpha_value)
+NBA_FVC_EPM_ridge_model.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
+
+# Make predictions on the test set
+NBA_FVC_test_set['Ridge_Predicted_Avg_EPM'] = NBA_FVC_EPM_ridge_model.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
+
+# Calculate RMSE and R-squared
+NBA_FVC_EPM_rmse_ridge = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Ridge_Predicted_Avg_EPM']))
+print("Ridge RMSE:", round(NBA_FVC_EPM_rmse_ridge, 4))
+
+NBA_FVC_EPM_r2_ridge = NBA_FVC_EPM_ridge_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
+print("Ridge R-squared:", round(NBA_FVC_EPM_r2_ridge, 4))
+
+# Get the coefficients and display them
+ridge_coefficients = pd.Series(NBA_FVC_EPM_ridge_model.coef_, index=NBA_FVC_EPM_predictors)
+print("Ridge Coefficients:")
+print(ridge_coefficients)
+
+# Add a residual column to the test set (Residual = Predicted - Actual)
+NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['Ridge_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
+
+# Display the selected columns with residuals
+NBA_FVC_test_set[['Player', 'Start', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'Ridge_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
 
 # RANDOM FOREST EPM MODEL
 
@@ -2048,16 +2547,40 @@ NBA_FVC_test_set['RF_Predicted_Avg_EPM'] = NBA_FVC_EPM_rf_model.predict(NBA_FVC_
 
 # RMSE & R^2
 NBA_FVC_EPM_rmse_rf = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['RF_Predicted_Avg_EPM']))
-print("RF RMSE:", NBA_FVC_EPM_rmse_rf.round(4))
+print("RF RMSE:", round(NBA_FVC_EPM_rmse_rf, 4))
 
 NBA_FVC_EPM_r2_rf = NBA_FVC_EPM_rf_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
-print("RF R-squared:", NBA_FVC_EPM_r2_rf.round(4))
+print("RF R-squared:", round(NBA_FVC_EPM_r2_rf, 4))
 
 # Add a residual column to the test set (Residual = Predicted - Actual)
 NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['RF_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
 
 # Display the relevant columns
-NBA_FVC_test_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EPM_Before', 'RF_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
+NBA_FVC_test_set[['Player', 'Role', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'RF_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
+
+# SIMPLE LINEAR EPM MODEL
+
+from sklearn.linear_model import LinearRegression
+
+# Create and train the linear model
+NBA_FVC_EPM_linear_model = LinearRegression()
+NBA_FVC_EPM_linear_model.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
+
+# Make predictions on the test set
+NBA_FVC_test_set['Linear_Predicted_Avg_EPM'] = NBA_FVC_EPM_linear_model.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
+
+# Calculate RMSE and R-squared
+NBA_FVC_EPM_rmse_lm = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Linear_Predicted_Avg_EPM']))
+print("LM RMSE:", round(NBA_FVC_EPM_rmse_lm, 4))
+
+NBA_FVC_EPM_r2_lm = NBA_FVC_EPM_linear_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
+print("LM R-squared:", round(NBA_FVC_EPM_r2_lm, 4))
+
+# Add a residual column to the test set (Residual = Predicted - Actual)
+NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['Linear_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
+
+# Display the selected columns with residuals
+NBA_FVC_test_set[['Player', 'Start', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'Linear_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
 
 # K-NEAREST NEIGHBORS (kNN) EPM MODEL
 
@@ -2065,7 +2588,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.model_selection import cross_val_score
 
 # Initialize the kNN Regressor (you can set k using the 'n_neighbors' parameter)
-NBA_FVC_EPM_knn_model = KNeighborsRegressor(n_neighbors=13) # k=5 by default
+NBA_FVC_EPM_knn_model = KNeighborsRegressor(n_neighbors=15) # k=5 by default
                                                             # "optimal k" code from before wasn't working correctly (likely showing optimal k on training set, rather than test set)
 # Fit the model to the training data
 NBA_FVC_EPM_knn_model.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_training_set[NBA_FVC_EPM_target])
@@ -2075,16 +2598,16 @@ NBA_FVC_test_set['kNN_Predicted_Avg_EPM'] = NBA_FVC_EPM_knn_model.predict(NBA_FV
 
 # RMSE & R^2
 NBA_FVC_EPM_rmse_kNN = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['kNN_Predicted_Avg_EPM']))
-print("kNN RMSE:", NBA_FVC_EPM_rmse_kNN.round(4))
+print("kNN RMSE:", round(NBA_FVC_EPM_rmse_kNN, 4))
 
 NBA_FVC_EPM_r2_kNN = NBA_FVC_EPM_knn_model.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
-print("kNN R-squared:", NBA_FVC_EPM_r2_kNN.round(4))
+print("kNN R-squared:", round(NBA_FVC_EPM_r2_kNN, 4))
 
 # Add a residual column to the test set (Residual = Predicted - Actual)
 NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['kNN_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
 
 # Display the relevant columns
-NBA_FVC_test_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EPM_Before', 'kNN_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
+NBA_FVC_test_set[['Player', 'Role', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'kNN_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
 
 # GRADIENT BOOSTING EPM MODEL
 
@@ -2098,19 +2621,19 @@ NBA_FVC_EPM_gbm.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_traini
 NBA_FVC_test_set['GB_Predicted_Avg_EPM'] = NBA_FVC_EPM_gbm.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
 
 NBA_FVC_EPM_rmse_gbm = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['GB_Predicted_Avg_EPM']))
-print("GB RMSE:", NBA_FVC_EPM_rmse_gbm.round(4))
+print("GB RMSE:", round(NBA_FVC_EPM_rmse_gbm, 4))
 
 NBA_FVC_EPM_r2_gbm = NBA_FVC_EPM_gbm.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
-print("GB R-squared:", NBA_FVC_EPM_r2_gbm.round(4))
+print("GB R-squared:", round(NBA_FVC_EPM_r2_gbm, 4))
 
 # Add a residual column to the test set (Residual = Predicted - Actual)
 NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['GB_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
 
 # Display relevant columns
-NBA_FVC_test_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EPM_Before',
+NBA_FVC_test_set[['Player', 'Role', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before',
                   'GB_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
 
-#XGBoost Model
+# XGBoost EPM MODEL
 
 from xgboost import XGBRegressor
 
@@ -2119,17 +2642,86 @@ NBA_FVC_EPM_xgb.fit(NBA_FVC_training_set[NBA_FVC_EPM_predictors], NBA_FVC_traini
 NBA_FVC_test_set['XGB_Predicted_Avg_EPM'] = NBA_FVC_EPM_xgb.predict(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
 
 NBA_FVC_EPM_rmse_xgb = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['XGB_Predicted_Avg_EPM']))
-print("XGB RMSE:", NBA_FVC_EPM_rmse_xgb.round(4))
+print("XGB RMSE:", round(NBA_FVC_EPM_rmse_xgb, 4))
 
 NBA_FVC_EPM_r2_xgb = NBA_FVC_EPM_xgb.score(NBA_FVC_test_set[NBA_FVC_EPM_predictors], NBA_FVC_test_set[NBA_FVC_EPM_target])
-print("XGB R-squared:", NBA_FVC_EPM_r2_xgb.round(4))
+print("XGB R-squared:", round(NBA_FVC_EPM_r2_xgb, 4))
 
 # Add a residual column to the test set (Residual = Predicted - Actual)
 NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['XGB_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
 
 # Display relevant columns
-NBA_FVC_test_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EPM_Before',
+NBA_FVC_test_set[['Player', 'Role', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before',
                   'XGB_Predicted_Avg_EPM', 'Avg_EPM_After', 'Residual']]
+
+# # NEURAL NETWORK EPM MODEL
+
+# from sklearn.metrics import r2_score
+# from sklearn.preprocessing import StandardScaler
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import Dense
+
+# # Define predictors and target
+# NBA_FVC_EPM_predictors = ['Role', 'Median Age', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'Age Adj. EPM Before']
+# NBA_FVC_EPM_target = 'Avg_EPM_After'
+
+# # Standardize the data (important for neural networks)
+# scaler = StandardScaler()
+# NBA_FVC_training_scaled = scaler.fit_transform(NBA_FVC_training_set[NBA_FVC_EPM_predictors])
+# NBA_FVC_test_scaled = scaler.transform(NBA_FVC_test_set[NBA_FVC_EPM_predictors])
+
+# # Define the neural network model
+# model = Sequential()
+
+# # Add layers to the model (input layer + 2 hidden layers + output layer)
+# model.add(Dense(64, input_dim=len(NBA_FVC_EPM_predictors), activation='relu'))  # Input layer and 1st hidden layer
+# model.add(Dense(32, activation='relu'))  # 2nd hidden layer
+# model.add(Dense(1, activation='linear'))  # Output layer (linear activation for regression)
+
+# # Compile the model
+# model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_squared_error'])
+
+# # Train the model
+# model.fit(NBA_FVC_training_scaled, NBA_FVC_training_set[NBA_FVC_EPM_target], epochs=100, batch_size=32, verbose=1)
+
+# # Make predictions on the test set
+# NBA_FVC_test_set['NN_Predicted_Avg_EPM'] = model.predict(NBA_FVC_test_scaled)
+
+# # Calculate RMSE and R-squared
+# NBA_FVC_EPM_rmse_nn = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['NN_Predicted_Avg_EPM']))
+# NBA_FVC_EPM_r2_nn = r2_score(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['NN_Predicted_Avg_EPM'])
+
+# print("NN RMSE:", round(NBA_FVC_EPM_rmse_nn, 4))
+# print("NN R-squared:", round(NBA_FVC_EPM_r2_nn, 4))
+
+# # Add a residual column to the test set (Residual = Predicted - Actual)
+# NBA_FVC_test_set['NN_Residual'] = NBA_FVC_test_set['NN_Predicted_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
+
+# # Display the selected columns with residuals
+# NBA_FVC_test_set[['Player', 'Role', 'Median Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'NN_Predicted_Avg_EPM', 'Avg_EPM_After', 'NN_Residual']]
+
+"""### Ensemble"""
+
+# ENSEMBLE EPM MODEL
+
+from sklearn.metrics import r2_score
+
+NBA_FVC_test_set['Ensemble_Pred_Avg_EPM'] = (NBA_FVC_test_set['Lasso_Predicted_Avg_EPM'] +
+                                             NBA_FVC_test_set['Linear_Predicted_Avg_EPM'] +
+                                             NBA_FVC_test_set['kNN_Predicted_Avg_EPM']) / 3  # Dividing by the total number of models
+
+# Calculate RMSE and R-squared
+NBA_FVC_EPM_rmse_ensemble = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Ensemble_Pred_Avg_EPM']))
+print("Ensemble RMSE:", round(NBA_FVC_EPM_rmse_ensemble, 4))
+
+NBA_FVC_EPM_r2_ensemble = r2_score(NBA_FVC_test_set['Avg_EPM_After'], NBA_FVC_test_set['Ensemble_Pred_Avg_EPM'])
+print("Ensemble R-squared:", round(NBA_FVC_EPM_r2_ensemble, 4))
+
+# Add a residual column to the test set (Residual = Predicted - Actual)
+NBA_FVC_test_set['EPM_Residual'] = NBA_FVC_test_set['Ensemble_Pred_Avg_EPM'] - NBA_FVC_test_set['Avg_EPM_After']
+
+# Display the selected columns with residuals
+NBA_FVC_test_set[['Player', 'Start', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'Ensemble_Pred_Avg_EPM', 'Avg_EPM_After', 'EPM_Residual']]
 
 """## EW"""
 
@@ -2140,26 +2732,107 @@ NBA_FVC_test_set['Predicted_Avg_EW'] = NBA_FVC_mean_ew
 NBA_FVC_baseline_rmse = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['Predicted_Avg_EW']))
 print("Baseline RMSE:", NBA_FVC_baseline_rmse.round(4), "Mean:", NBA_FVC_mean_ew.round(4))
 
-# SIMPLE LINEAR EW MODEL
+# DEFINE PREDICTORS FOR EW MODELS
 
-NBA_FVC_EW_predictors = ['Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EW_Before']
+scaler = StandardScaler()
+
+# Standardize 'Age_Adj_EW_Before' & 'W_Avg_Min_Before'
+NBA_FVC_training_set['Age_Adj_EW_Before'] = scaler.fit_transform(NBA_FVC_training_set[['Age_Adj_EW_Before']])
+NBA_FVC_test_set['Age_Adj_EW_Before'] = scaler.transform(NBA_FVC_test_set[['Age_Adj_EW_Before']])
+
+NBA_FVC_2024['Age_Adj_EW_Before'] = scaler.transform(NBA_FVC_2024[['Age_Adj_EW_Before']])
+
+# NBA_FVC_training_set['W_Avg_Min_Before'] = scaler.fit_transform(NBA_FVC_training_set[['W_Avg_Min_Before']])
+# NBA_FVC_test_set['W_Avg_Min_Before'] = scaler.transform(NBA_FVC_test_set[['W_Avg_Min_Before']])
+
+# Define the EW predictors
+# NBA_FVC_EW_predictors = ['Peak_Age_Range', 'Far_From_Peak', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before']
+NBA_FVC_EW_predictors = ['W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before']
+
+"""### Individual Models"""
+
+# LASSO EW MODEL
 
 NBA_FVC_EW_target = 'Avg_EW_After'
 
-NBA_FVC_EW_model = LinearRegression()
-NBA_FVC_EW_model.fit(NBA_FVC_training_set[NBA_FVC_EW_predictors], NBA_FVC_training_set[NBA_FVC_EW_target])
-NBA_FVC_test_set['Linear_Predicted_Avg_EW'] = NBA_FVC_EW_model.predict(NBA_FVC_test_set[NBA_FVC_EW_predictors])
+# Create and train the Lasso model (increase alpha to encourage feature selection)
+alpha_value = 0.1
+NBA_FVC_EW_lasso_model = Lasso(alpha=alpha_value)
+NBA_FVC_EW_lasso_model.fit(NBA_FVC_training_set[NBA_FVC_EW_predictors], NBA_FVC_training_set[NBA_FVC_EW_target])
+
+# Make predictions on the test set
+NBA_FVC_test_set['Lasso_Predicted_Avg_EW'] = NBA_FVC_EW_lasso_model.predict(NBA_FVC_test_set[NBA_FVC_EW_predictors])
+
+# # Adjust predictions for players older than 29
+# age_adjustment_factor = -0.7738  # The discovered coefficient
+# NBA_FVC_test_set['Age_Adjustment'] = NBA_FVC_test_set.apply(
+#     lambda row: 0.05 * (age_adjustment_factor * (row['Median_Age'] - 29)) if row['Median_Age'] > 29 else 0, axis=1) # modify multiplier as needed
+
+# NBA_FVC_test_set['Lasso_Predicted_Avg_EW'] = NBA_FVC_test_set['Lasso_Predicted_Avg_EW'] + NBA_FVC_test_set['Age_Adjustment']
+
+# Calculate RMSE and R-squared
+NBA_FVC_EW_rmse_lasso = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['Lasso_Predicted_Avg_EW']))
+print("Lasso RMSE:", round(NBA_FVC_EW_rmse_lasso, 4))
+
+NBA_FVC_EW_r2_lasso = NBA_FVC_EW_lasso_model.score(NBA_FVC_test_set[NBA_FVC_EW_predictors], NBA_FVC_test_set[NBA_FVC_EW_target])
+print("Lasso R-squared:", round(NBA_FVC_EW_r2_lasso, 4))
+
+# Get the coefficients and identify which predictors are kept
+lasso_coefficients = pd.Series(NBA_FVC_EW_lasso_model.coef_, index=NBA_FVC_EW_predictors)
+print()
+print("Lasso Coefficients:")
+print(lasso_coefficients)
+
+# Add a residual column to the test set (Residual = Predicted - Actual)
+NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['Lasso_Predicted_Avg_EW'] - NBA_FVC_test_set['Avg_EW_After']
+
+# Display the selected columns with residuals
+NBA_FVC_test_set[['Player', 'Role', 'Median_Age', 'Far_From_Peak', 'Peak_Age_Range', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before', 'Lasso_Predicted_Avg_EW', 'Avg_EW_After', 'Residual']]
+
+# RIDGE EW MODEL
+
+# Create and train the Ridge model (alpha controls regularization strength)
+alpha_value = 1.0
+NBA_FVC_EW_ridge_model = Ridge(alpha=alpha_value)
+NBA_FVC_EW_ridge_model.fit(NBA_FVC_training_set[NBA_FVC_EW_predictors], NBA_FVC_training_set[NBA_FVC_EW_target])
+
+# Make predictions on the test set
+NBA_FVC_test_set['Ridge_Predicted_Avg_EW'] = NBA_FVC_EW_ridge_model.predict(NBA_FVC_test_set[NBA_FVC_EW_predictors])
+
+# Calculate RMSE and R-squared
+NBA_FVC_EW_rmse_ridge = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['Ridge_Predicted_Avg_EW']))
+print("Ridge RMSE:", round(NBA_FVC_EW_rmse_ridge, 4))
+
+NBA_FVC_EW_r2_ridge = NBA_FVC_EW_ridge_model.score(NBA_FVC_test_set[NBA_FVC_EW_predictors], NBA_FVC_test_set[NBA_FVC_EW_target])
+print("Ridge R-squared:", round(NBA_FVC_EW_r2_ridge, 4))
+
+# Get the coefficients and display them
+ridge_coefficients = pd.Series(NBA_FVC_EW_ridge_model.coef_, index=NBA_FVC_EW_predictors)
+print("Ridge Coefficients:")
+print(ridge_coefficients)
+
+# Add a residual column to the test set (Residual = Predicted - Actual)
+NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['Ridge_Predicted_Avg_EW'] - NBA_FVC_test_set['Avg_EW_After']
+
+# Display the selected columns with residuals
+NBA_FVC_test_set[['Player', 'Start', 'Peak_Age_Range', 'Far_From_Peak', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before', 'Ridge_Predicted_Avg_EW', 'Avg_EW_After', 'Residual']]
+
+# SIMPLE LINEAR EW MODEL
+
+NBA_FVC_EW_linear_model = LinearRegression()
+NBA_FVC_EW_linear_model.fit(NBA_FVC_training_set[NBA_FVC_EW_predictors], NBA_FVC_training_set[NBA_FVC_EW_target])
+NBA_FVC_test_set['Linear_Predicted_Avg_EW'] = NBA_FVC_EW_linear_model.predict(NBA_FVC_test_set[NBA_FVC_EW_predictors])
 
 NBA_FVC_EW_rmse_lm = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['Linear_Predicted_Avg_EW']))
-print("LM RMSE:", NBA_FVC_EW_rmse_lm.round(4))
+print("LM RMSE:", round(NBA_FVC_EW_rmse_lm, 4))
 
-NBA_FVC_EW_r2_lm = NBA_FVC_EW_model.score(NBA_FVC_test_set[NBA_FVC_EW_predictors], NBA_FVC_test_set[NBA_FVC_EW_target])
-print("LM R-squared:", NBA_FVC_EW_r2_lm.round(4))
+NBA_FVC_EW_r2_lm = NBA_FVC_EW_linear_model.score(NBA_FVC_test_set[NBA_FVC_EW_predictors], NBA_FVC_test_set[NBA_FVC_EW_target])
+print("LM R-squared:", round(NBA_FVC_EW_r2_lm, 4))
 
 # Add a residual column to the test set (Residual = Predicted - Actual)
 NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['Linear_Predicted_Avg_EW'] - NBA_FVC_test_set['Avg_EW_After']
 
-NBA_FVC_test_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EW_Before', 'Linear_Predicted_Avg_EW', 'Avg_EW_After', 'Residual']]
+NBA_FVC_test_set[['Player', 'Start', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before', 'Linear_Predicted_Avg_EW', 'Avg_EW_After', 'Residual']]
 
 # RANDOM FOREST EW MODEL
 
@@ -2174,18 +2847,98 @@ NBA_FVC_test_set['RF_Predicted_Avg_EW'] = NBA_FVC_EW_rf_model.predict(NBA_FVC_te
 
 # RMSE & R^2
 NBA_FVC_EW_rmse_rf = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['RF_Predicted_Avg_EW']))
-print("RF RMSE:", NBA_FVC_EW_rmse_rf.round(4))
+print("RF RMSE:", round(NBA_FVC_EW_rmse_rf, 4))
 
 NBA_FVC_EW_r2_rf = NBA_FVC_EW_rf_model.score(NBA_FVC_test_set[NBA_FVC_EW_predictors], NBA_FVC_test_set[NBA_FVC_EW_target])
-print("RF R-squared:", NBA_FVC_EW_r2_rf.round(4))
+print("RF R-squared:", round(NBA_FVC_EW_r2_rf, 4))
 
 # Add a residual column to the test set (Residual = Predicted - Actual)
 NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['RF_Predicted_Avg_EW'] - NBA_FVC_test_set['Avg_EW_After']
 
 # Display the relevant columns
-NBA_FVC_test_set[['Player', 'Role', 'Age At Signing', 'W_Avg_Min_Before', 'W_Avg_USG_Before', 'W_Avg_EW_Before', 'RF_Predicted_Avg_EW', 'Avg_EW_After', 'Residual']]
+NBA_FVC_test_set[['Player', 'Start', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before', 'RF_Predicted_Avg_EW', 'Avg_EW_After', 'Residual']]
 
-"""#Front End Development
+# K-NEAREST NEIGHBORS (kNN) EW MODEL
 
-###Shiny
+# Initialize the kNN Regressor (you can set k using the 'n_neighbors' parameter)
+NBA_FVC_EW_knn_model = KNeighborsRegressor(n_neighbors=15) # k=5 by default
+                                                            # "optimal k" code from before wasn't working correctly (likely showing optimal k on training set, rather than test set)
+# Fit the model to the training data
+NBA_FVC_EW_knn_model.fit(NBA_FVC_training_set[NBA_FVC_EW_predictors], NBA_FVC_training_set[NBA_FVC_EW_target])
+
+# Make predictions on the test set
+NBA_FVC_test_set['kNN_Predicted_Avg_EW'] = NBA_FVC_EW_knn_model.predict(NBA_FVC_test_set[NBA_FVC_EW_predictors])
+
+# RMSE & R^2
+NBA_FVC_EW_rmse_kNN = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['kNN_Predicted_Avg_EW']))
+print("kNN RMSE:", round(NBA_FVC_EW_rmse_kNN, 4))
+
+NBA_FVC_EW_r2_kNN = NBA_FVC_EW_knn_model.score(NBA_FVC_test_set[NBA_FVC_EW_predictors], NBA_FVC_test_set[NBA_FVC_EW_target])
+print("kNN R-squared:", round(NBA_FVC_EW_r2_kNN, 4))
+
+# Add a residual column to the test set (Residual = Predicted - Actual)
+NBA_FVC_test_set['Residual'] = NBA_FVC_test_set['kNN_Predicted_Avg_EW'] - NBA_FVC_test_set['Avg_EW_After']
+
+# Display the relevant columns
+NBA_FVC_test_set[['Player', 'Role', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before', 'kNN_Predicted_Avg_EW', 'Avg_EW_After', 'Residual']]
+
+"""### Ensemble"""
+
+# ENSEMBLE EW MODEL
+
+NBA_FVC_test_set['Ensemble_Pred_Avg_EW'] = (NBA_FVC_test_set['Ridge_Predicted_Avg_EW'] +
+                                            NBA_FVC_test_set['RF_Predicted_Avg_EW'] +
+                                            NBA_FVC_test_set['kNN_Predicted_Avg_EW']) / 3  # Dividing by the total number of models
+
+# Calculate RMSE and R-squared
+NBA_FVC_EW_rmse_ensemble = np.sqrt(mean_squared_error(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['Ensemble_Pred_Avg_EW']))
+print("Ensemble RMSE:", round(NBA_FVC_EW_rmse_ensemble, 4))
+
+NBA_FVC_EW_r2_ensemble = r2_score(NBA_FVC_test_set['Avg_EW_After'], NBA_FVC_test_set['Ensemble_Pred_Avg_EW'])
+print("Ensemble R-squared:", round(NBA_FVC_EW_r2_ensemble, 4))
+
+# Add a residual column to the test set (Residual = Predicted - Actual)
+NBA_FVC_test_set['EW_Residual'] = NBA_FVC_test_set['Ensemble_Pred_Avg_EW'] - NBA_FVC_test_set['Avg_EW_After']
+
+# Display the selected columns with residuals
+NBA_FVC_test_set[['Player', 'Start', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before', 'Ensemble_Pred_Avg_EW', 'Avg_EW_After', 'EW_Residual']]
+
+"""# Fair Value Calculation
+
+## 2024/25 Contracts
 """
+
+NBA_FVC_2024.describe()
+
+# PREDICT FUTURE EPM
+## NBA_FVC_EPM_predictors = numerical_predictors + ['Peak_Age_Range']
+
+NBA_FVC_2024['Lasso_Predicted_Avg_EPM'] = NBA_FVC_EPM_lasso_model.predict(NBA_FVC_2024[NBA_FVC_EPM_predictors])
+NBA_FVC_2024['Linear_Predicted_Avg_EPM'] = NBA_FVC_EPM_linear_model.predict(NBA_FVC_2024[NBA_FVC_EPM_predictors])
+NBA_FVC_2024['kNN_Predicted_Avg_EPM'] = NBA_FVC_EPM_knn_model.predict(NBA_FVC_2024[NBA_FVC_EPM_predictors])
+
+NBA_FVC_2024['Ensemble_Pred_Avg_EPM'] = (NBA_FVC_2024['Lasso_Predicted_Avg_EPM'] +
+                                          NBA_FVC_2024['Linear_Predicted_Avg_EPM'] +
+                                          NBA_FVC_2024['kNN_Predicted_Avg_EPM']) / 3
+
+# PREDICT FUTURE EW
+## NBA_FVC_EW_predictors = ['W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EW_Before']
+
+NBA_FVC_2024['Ridge_Predicted_Avg_EW'] = NBA_FVC_EW_ridge_model.predict(NBA_FVC_2024[NBA_FVC_EW_predictors])
+NBA_FVC_2024['RF_Predicted_Avg_EW'] = NBA_FVC_EW_rf_model.predict(NBA_FVC_2024[NBA_FVC_EW_predictors])
+NBA_FVC_2024['kNN_Predicted_Avg_EW'] = NBA_FVC_EW_knn_model.predict(NBA_FVC_2024[NBA_FVC_EW_predictors])
+
+NBA_FVC_2024['Ensemble_Pred_Avg_EW'] = (NBA_FVC_2024['Ridge_Predicted_Avg_EW'] +
+                                         NBA_FVC_2024['RF_Predicted_Avg_EW'] +
+                                         NBA_FVC_2024['kNN_Predicted_Avg_EW']) / 3
+
+# DISPLAY
+NBA_FVC_2024[['Player', 'Start', 'Median_Age', 'W_Avg_MPG_Before', 'W_Avg_USG_Before', 'Age_Adj_EPM_Before', 'Age_Adj_EW_Before', 'Ensemble_Pred_Avg_EPM', 'Ensemble_Pred_Avg_EW']]
+
+# EQUATE PREDICTED EPM/EW TO EXPECTED AAV (first as proportion of salary cap + maybe 2nd apron, then as $ amount)
+
+"""## Past Contracts"""
+
+# FOR PAST CONTRACTS (almost every player in dataset)
+## predict EPM & EW After; equate to expected value; compare vs real value (largest residuals) + determine which AAV's were least correlated with 'After' performance
+### trained on only completed contracts, but apply predictions to all pre-24/25 entries (might not need predictions anyways)
